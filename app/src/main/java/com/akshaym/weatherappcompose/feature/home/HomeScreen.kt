@@ -1,11 +1,14 @@
 package com.akshaym.weatherappcompose.feature.home
 
 import android.Manifest
+import android.annotation.SuppressLint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,10 +19,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -29,37 +35,65 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.akshaym.weatherappcompose.R
 import com.akshaym.weatherappcompose.ui.permissions.PermissionHandler
+import timber.log.Timber
 
+@SuppressLint("TimberArgCount")
 @Composable
 fun HomeScreen(navController: NavHostController) {
+    val viewModel = hiltViewModel<HomeViewModel>()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val isError by viewModel.error.collectAsState()
+    val location by viewModel.currentLocation.collectAsState()
     PermissionHandler(
         context = navController.context,
         permissions = listOf(
             Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION
         ),
         rationalMessage = "We need location to show your local weather data accurately.",
-        onAllGranted = { /* Trigger your ViewModel/Room logic here */ }) { hasPermission, requestPermission ->
+        onAllGranted = { viewModel.getCurrentLocation() }) { hasPermission, requestPermission ->
 
         if (hasPermission) {
-            // THE TARGET SCREEN (Gated by permission)
-            Column {
-                CurrentLocationView()
-                Image(
-                    modifier = Modifier
-                        .padding(top = 24.dp, start = 16.dp)
-                        .width(120.dp)
-                        .height(120.dp),
-                    painter = painterResource(R.drawable.ic_rainy),
-                    contentDescription = "",
-                    colorFilter = ColorFilter.tint(Color.Yellow)
-                )
-                Text(
-                    "72", modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
+            Timber.e("Has permission $hasPermission, $isError, $location, $isLoading")
+            viewModel.getCurrentLocation()
+            Column(modifier = Modifier.fillMaxSize()) {
+                if (isLoading) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            CircularProgressIndicator()
+                            Text("Loading....", modifier = Modifier.padding(top = 16.dp))
+                        }
+                    }
+                } else if (isError != null) {
+                    Text(text = isError ?: "Unknown error", color = Color.Red)
+                } else {
+                    if (location != null) {
+                        Timber.i("location " + location)
+                        Text("Latitude: ${location?.latitude}")
+                        Text("Longitude: ${location?.longitude}")
+                        Text("Accuracy: ${location?.accuracy} meters")
+                    }
+                    CurrentLocationView()
+                    Image(
+                        modifier = Modifier
+                            .padding(top = 24.dp, start = 16.dp)
+                            .width(120.dp)
+                            .height(120.dp),
+                        painter = painterResource(R.drawable.ic_rainy),
+                        contentDescription = "",
+                        colorFilter = ColorFilter.tint(Color.Yellow)
+                    )
+                    Text(
+                        "72", modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                }
+
             }
         } else {
             // THE "PRE-REQUEST" UI (The one with the big button)

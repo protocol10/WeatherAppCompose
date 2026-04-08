@@ -21,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import timber.log.Timber
 
 @Composable
 fun PermissionHandler(
@@ -37,6 +38,7 @@ fun PermissionHandler(
         val granted = result.values.all { it }
         if (granted) {
             permissionStatus = PermissionStatus.Granted
+            Timber.i("OnAllGranted L:41")
             onAllGranted()
         } else {
             permissionStatus = PermissionStatus.Denied
