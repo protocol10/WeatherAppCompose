@@ -18,6 +18,16 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        def localProperties = new Properties()
+        def localPropsFile = rootProject.file('local.properties')
+        if (localPropsFile.exists()) {
+            localProperties.load(new FileInputStream(localPropsFile))
+        }
+
+        def accuWeatherApiKey = localProperties.getProperty('ACCUWEATHER_API_KEY', '')
+
+        // Add to BuildConfig
+        buildConfigField "String", "ACCUWEATHER_API_KEY", "\"${accuWeatherApiKey}\""
     }
 
     buildTypes {
@@ -35,6 +45,7 @@ android {
     }
     buildFeatures {
         compose true
+        buildConfig true
     }
 }
 
@@ -61,6 +72,7 @@ dependencies {
     implementation(libs.play.services.location)
     implementation(libs.kotlinx.coroutines.play.services)
     implementation libs.kotlinx.coroutines.android
+    implementation(libs.okhttp3.logging.interceptor)
 
 
     implementation libs.retrofit2

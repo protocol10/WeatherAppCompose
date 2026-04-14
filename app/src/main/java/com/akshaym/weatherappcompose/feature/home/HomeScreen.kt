@@ -24,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -36,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.akshaym.weatherappcompose.R
@@ -46,9 +48,9 @@ import timber.log.Timber
 @Composable
 fun HomeScreen(navController: NavHostController) {
     val viewModel = hiltViewModel<HomeViewModel>()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val isError by viewModel.error.collectAsState()
-    val location by viewModel.currentLocation.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val isError by viewModel.error.collectAsStateWithLifecycle()
+    val location by viewModel.currentLocation.collectAsStateWithLifecycle()
     PermissionHandler(
         context = navController.context,
         permissions = listOf(
@@ -57,9 +59,13 @@ fun HomeScreen(navController: NavHostController) {
         rationalMessage = "We need location to show your local weather data accurately.",
         onAllGranted = { viewModel.getCurrentLocation() }) { hasPermission, requestPermission ->
 
+        LaunchedEffect(hasPermission) {
+            if (hasPermission) {
+                viewModel.getCurrentLocation()
+            }
+        }
         if (hasPermission) {
             Timber.e("Has permission $hasPermission, $isError, $location, $isLoading")
-            viewModel.getCurrentLocation()
             Column(modifier = Modifier.fillMaxSize()) {
                 if (isLoading) {
                     Box(

@@ -49,7 +49,10 @@ fun PermissionHandler(
         val isGranted = permissions.all {
             ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
         }
-        if (isGranted) permissionStatus = PermissionStatus.Granted
+        if (isGranted) {
+            permissionStatus = PermissionStatus.Granted
+            onAllGranted()
+        }
     }
     val isPermanentlyDenied = permissions.any { p ->
         activity?.let { !ActivityCompat.shouldShowRequestPermissionRationale(it, p) } ?: false

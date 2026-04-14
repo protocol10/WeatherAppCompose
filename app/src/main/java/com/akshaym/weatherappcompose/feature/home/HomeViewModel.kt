@@ -4,6 +4,7 @@ import android.location.Location
 import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.akshaym.weatherappcompose.feature.home.domain.repository.WeatherRepository
 import com.akshaym.weatherappcompose.location.LocationFetcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -15,7 +16,10 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(val fetcher: LocationFetcher) : ViewModel() {
+class HomeViewModel @Inject constructor(
+    val fetcher: LocationFetcher,
+    val weatherRepository: WeatherRepository
+) : ViewModel() {
 
     private val _currentLocation = MutableStateFlow<Location?>(null)
     val currentLocation: StateFlow<Location?> = _currentLocation.asStateFlow()
@@ -29,7 +33,7 @@ class HomeViewModel @Inject constructor(val fetcher: LocationFetcher) : ViewMode
     val error: StateFlow<String?> = _error.asStateFlow()
     fun getCurrentLocation() {
         Timber.i("getCurrent location")
-        if (isInitialLocationLoaded.value) {
+        if (isInitialLocationLoaded.value || isLoading.value) {
             return
         }
 
@@ -39,12 +43,27 @@ class HomeViewModel @Inject constructor(val fetcher: LocationFetcher) : ViewMode
             _error.value = null
             try {
                 val currentLocation = fetcher.getCurrentLocation()
+
+                Timber.i("Current location calling api $currentLocation")
+
+                currentLocation?.let {
+                    val currentWeather = weatherRepository.getCurrentWeather(
+                        currentLocation.latitude,
+                        currentLocation.longitude
+                    )
+                    Timber.i("Current weather $currentWeather")
+//                    val weatherForecast =
+//                        weatherRepository.getWeatherForecast(currentWeather.locationKey)
+//                    Timber.i("WEatherforecase $weatherForecast")
+                }
+
                 _currentLocation.value = currentLocation
                 _isInitialLocationLoaded.value = true
                 _isLoading.value = false
             } catch (e: Exception) {
                 _isLoading.value = false
                 _error.value = e.toString()
+                e.printStackTrace()
             }
         }
     }
