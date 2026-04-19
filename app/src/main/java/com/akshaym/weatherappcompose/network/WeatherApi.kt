@@ -1,5 +1,6 @@
 package com.akshaym.weatherappcompose.network
 
+import com.akshaym.weatherappcompose.feature.home.data.CurrentLocationWeatherDataItem
 import com.akshaym.weatherappcompose.feature.home.data.ForeCastResponse
 import com.akshaym.weatherappcompose.feature.home.data.GeoLocationResponse
 import retrofit2.http.GET
@@ -13,4 +14,11 @@ interface WeatherApi {
 
     @GET("forecasts/v1/hourly/12hour/{locationKey}")
     suspend fun getTwelveHourlyForecast(@Path("locationKey") locationkey: String): List<ForeCastResponse>
+
+    //    https://dataservice.accuweather.com/currentconditions/v1/337169
+    @GET("currentconditions/v1/{locationKey}")
+    suspend fun getCurrentLocationWeatherData(
+        @Path("locationKey") locationkey: String,
+        @Query("details") details: Boolean = true
+    ): List<CurrentLocationWeatherDataItem>
 }

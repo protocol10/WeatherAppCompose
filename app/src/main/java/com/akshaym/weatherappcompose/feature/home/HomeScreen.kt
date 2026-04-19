@@ -4,31 +4,38 @@ import android.Manifest
 import android.annotation.SuppressLint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -41,16 +48,21 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.akshaym.weatherappcompose.R
+import com.akshaym.weatherappcompose.feature.home.domain.model.WeatherSection
 import com.akshaym.weatherappcompose.ui.permissions.PermissionHandler
+import androidx.core.graphics.toColorInt
+import com.akshaym.weatherappcompose.ui.theme.WeatherCardBg
+import com.akshaym.weatherappcompose.ui.theme.WeatherGradientBottom
+import com.akshaym.weatherappcompose.ui.theme.WeatherGradientTop
 import timber.log.Timber
 
-@SuppressLint("TimberArgCount")
 @Composable
 fun HomeScreen(navController: NavHostController) {
     val viewModel = hiltViewModel<HomeViewModel>()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val isError by viewModel.error.collectAsStateWithLifecycle()
-    val location by viewModel.currentLocation.collectAsStateWithLifecycle()
+    val uiList by viewModel.uiList.collectAsStateWithLifecycle()
+
     PermissionHandler(
         context = navController.context,
         permissions = listOf(
@@ -64,9 +76,17 @@ fun HomeScreen(navController: NavHostController) {
                 viewModel.getCurrentLocation()
             }
         }
+        val backgroundBrush = Brush.verticalGradient(
+            colors = listOf(
+                WeatherGradientTop, WeatherGradientBottom
+            )
+        )
         if (hasPermission) {
-            Timber.e("Has permission $hasPermission, $isError, $location, $isLoading")
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(brush = backgroundBrush)
+            ) {
                 if (isLoading) {
                     Box(
                         modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
@@ -79,25 +99,68 @@ fun HomeScreen(navController: NavHostController) {
                 } else if (isError != null) {
                     Text(text = isError ?: "Unknown error", color = Color.Red)
                 } else {
-                    if (location != null) {
-                        Timber.i("location " + location)
-                        Text("Latitude: ${location?.latitude}")
-                        Text("Longitude: ${location?.longitude}")
-                        Text("Accuracy: ${location?.accuracy} meters")
+                    LazyColumn(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        items(items = uiList) { section ->
+                            when (section) {
+                                is WeatherSection.Header -> {
+                                    Column() {
+                                        CurrentLocationView(section.cityName, section.countryName)
+                                        Image(
+                                            modifier = Modifier
+                                                .padding(top = 24.dp, start = 16.dp)
+                                                .width(120.dp)
+                                                .height(120.dp),
+                                            painter = painterResource(R.drawable.ic_rainy),
+                                            contentDescription = "",
+                                            colorFilter = ColorFilter.tint(Color.Yellow)
+                                        )
+                                        section.temperature?.let {
+                                            Timber.i("value are ${it.value} ${it.unit}")
+                                            Text(
+                                                text = "${it.value} ${it.unit}",
+                                                modifier = Modifier
+                                                    .padding(16.dp)
+                                                    .align(Alignment.CenterHorizontally)
+                                            )
+                                        }
+                                    }
+
+                                }
+
+                                is WeatherSection.WeatherMetrics -> {
+                                    Column(
+                                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                                        modifier = Modifier.padding(16.dp)
+                                    ) {
+                                        section.items.chunked(2).forEach { rowItems ->
+                                            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                                rowItems.forEach { item ->
+                                                    MetricCard(
+                                                        icon = item.icon,
+                                                        title = item.title,
+                                                        value = item.value,
+                                                        unit = item.unit,
+                                                        modifier = Modifier.weight(1f)
+                                                    )
+                                                }
+                                                if (rowItems.size == 1) {
+                                                    Spacer(Modifier.weight(1f))
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                is WeatherSection.HourlyForeCast -> {
+
+                                }
+                            }
+
+                        }
                     }
-                    CurrentLocationView()
-                    Image(
-                        modifier = Modifier
-                            .padding(top = 24.dp, start = 16.dp)
-                            .width(120.dp)
-                            .height(120.dp),
-                        painter = painterResource(R.drawable.ic_rainy),
-                        contentDescription = "",
-                        colorFilter = ColorFilter.tint(Color.Yellow)
-                    )
-                    Text(
-                        "72", modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
                 }
 
             }
@@ -111,8 +174,33 @@ fun HomeScreen(navController: NavHostController) {
 
 @Preview
 @Composable
+fun PreviewHeader() {
+    Column() {
+        CurrentLocationView("section.cityName", "section.countryName")
+        Image(
+            modifier = Modifier
+                .padding(top = 24.dp, start = 16.dp)
+                .width(120.dp)
+                .height(120.dp),
+            painter = painterResource(R.drawable.ic_rainy),
+            contentDescription = "",
+            colorFilter = ColorFilter.tint(Color.Yellow)
+        )
+
+        Text(
+            text = "{it.value} {it.unit}",
+            modifier = Modifier
+                .padding(16.dp)
+                .align(Alignment.CenterHorizontally)
+        )
+//        }
+    }
+}
+
+@Preview
+@Composable
 fun PreviewHomeScreen() {
-    HomeScreen(rememberNavController())
+    MetricCard(0, "akshay", "value", "val", modifier = Modifier.width(100.dp))
 }
 
 @Composable
@@ -126,7 +214,6 @@ fun PermissionRequestUI(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // 1. Visual Anchor (Big Icon)
         Icon(
             imageVector = Icons.Default.LocationOn,
             contentDescription = "Location Icon",
@@ -136,7 +223,6 @@ fun PermissionRequestUI(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // 2. Headline
         Text(
             text = "Enable Location",
             style = MaterialTheme.typography.headlineMedium,
@@ -146,7 +232,6 @@ fun PermissionRequestUI(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 3. The "Why" (Explanation)
         Text(
             text = "To show you the most accurate weather for your current city, we need to know where you are.",
             style = MaterialTheme.typography.bodyLarge,
@@ -157,7 +242,6 @@ fun PermissionRequestUI(
 
         Spacer(modifier = Modifier.height(48.dp))
 
-        // 4. The Main Action Button
         Button(
             onClick = onRequestClick,
             modifier = Modifier
@@ -172,12 +256,38 @@ fun PermissionRequestUI(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // 5. Privacy Assurance
         Text(
             text = "We only use your location to fetch local weather data. Your privacy is protected.",
             style = MaterialTheme.typography.labelSmall,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.outline
         )
+    }
+}
+
+@Composable
+fun MetricCard(icon: Int, title: String, value: String, unit: String, modifier: Modifier) {
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(
+            containerColor = WeatherCardBg
+        ),
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Row(modifier = Modifier.padding(start = 8.dp, top = 12.dp)) {
+                Icon(
+                    modifier = Modifier.padding(end = 8.dp),
+                    imageVector = Icons.Filled.LocationOn,
+                    contentDescription = "",
+                    tint = Color.Red
+                )
+                Text(text = title, color = Color.White)
+            }
+            Text(
+                modifier = Modifier.padding(start = 12.dp, top = 16.dp, bottom = 12.dp),
+                text = "$value $unit",
+                color = Color.White,
+            )
+        }
     }
 }

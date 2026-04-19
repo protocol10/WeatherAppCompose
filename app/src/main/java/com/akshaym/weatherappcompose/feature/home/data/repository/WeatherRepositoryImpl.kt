@@ -1,7 +1,10 @@
 package com.akshaym.weatherappcompose.feature.home.data.repository
 
+import com.akshaym.weatherappcompose.feature.home.data.CurrentLocationWeatherDataItem
 import com.akshaym.weatherappcompose.feature.home.data.ForeCastResponse
 import com.akshaym.weatherappcompose.feature.home.data.GeoLocationResponse
+import com.akshaym.weatherappcompose.feature.home.domain.model.CurrentWeatherLocationData
+import com.akshaym.weatherappcompose.feature.home.domain.model.MetricItem
 import com.akshaym.weatherappcompose.feature.home.domain.model.Temperature
 import com.akshaym.weatherappcompose.feature.home.domain.model.WeatherForeCast
 import com.akshaym.weatherappcompose.feature.home.domain.model.WeatherLocation
@@ -22,6 +25,42 @@ class WeatherRepositoryImpl @Inject constructor(val weatherApi: WeatherApi) : We
         val response = weatherApi.getTwelveHourlyForecast(key)
         return response.toForeCast()
     }
+
+    override suspend fun getCurrentWeatherData(key: String): CurrentWeatherLocationData? {
+        val response = weatherApi.getCurrentLocationWeatherData(key)
+        return response.toCurrentWeatherData()
+    }
+}
+
+private fun List<CurrentLocationWeatherDataItem>.toCurrentWeatherData(): CurrentWeatherLocationData? {
+    if (!this.isEmpty()) {
+        with(this[0]) {
+            val metricItem = mutableListOf<MetricItem>()
+            metricItem.add(MetricItem("Humidity", relativeHumidity.toString(), 0, "%"))
+            metricItem.add(MetricItem("WindSpeed", wind.speed.metric.value.toString(), 0, "mph"))
+            metricItem.add(MetricItem("Visibility", visibility.metric.value.toString(), 0, "mi"))
+            metricItem.add(MetricItem("Pressure", pressure.metric.value.toString(), 0, "in"))
+            metricItem.add(MetricItem("UVIndex", uvIndex.toString(), 0, ""))
+            metricItem.add(
+                MetricItem(
+                    "Feels Like",
+                    realFeelTemperature.metric.value.toString(),
+                    0,
+                    ""
+                )
+            )
+            return CurrentWeatherLocationData(
+                temperature = Temperature(
+                    value = this.temperature.metric.value,
+                    unit = this.temperature.metric.unit,
+                    unitType = this.temperature.metric.unitType
+                ), weatherText = this.weatherText,
+                list = metricItem
+            )
+        }
+
+    }
+    return null
 }
 
 private fun List<ForeCastResponse>.toForeCast(): List<WeatherForeCast> {
@@ -33,10 +72,7 @@ private fun List<ForeCastResponse>.toForeCast(): List<WeatherForeCast> {
                     value = i.temperature.value,
                     unit = i.temperature.unit,
                     unitType = i.temperature.unitType
-                ),
-                dateTime = i.dateTime,
-                epochTime = i.epochDateTime,
-                weatherIcon = i.weatherIcon
+                ), dateTime = i.dateTime, epochTime = i.epochDateTime, weatherIcon = i.weatherIcon
             )
         )
     }
@@ -44,11 +80,11 @@ private fun List<ForeCastResponse>.toForeCast(): List<WeatherForeCast> {
 }
 
 private fun GeoLocationResponse.toWeatherLocation(): WeatherLocation {
-    Timber.i("to weather location $this")
     return WeatherLocation(
         locationKey = key,
         cityName = englishName,
         latitude = geoLocationResponse.latitude,
         longitude = geoLocationResponse.longitude,
+        countryName = countryResponse.localizedName
     )
 }
