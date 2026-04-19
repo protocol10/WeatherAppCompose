@@ -52,7 +52,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.akshaym.weatherappcompose.R
-import com.akshaym.weatherappcompose.feature.home.domain.model.WeatherSection
+import com.akshaym.weatherappcompose.domain.model.WeatherSection
 import com.akshaym.weatherappcompose.ui.permissions.PermissionHandler
 import com.akshaym.weatherappcompose.ui.extensions.getIcon
 import com.akshaym.weatherappcompose.ui.theme.WeatherCardBg

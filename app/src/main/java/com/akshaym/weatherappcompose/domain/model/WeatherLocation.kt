@@ -1,4 +1,4 @@
-package com.akshaym.weatherappcompose.feature.home.domain.model
+package com.akshaym.weatherappcompose.domain.model
 
 data class WeatherLocation(
     val locationKey: String,

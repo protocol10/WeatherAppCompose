@@ -1,6 +1,5 @@
 package com.akshaym.weatherappcompose.ui.extensions
 
-import android.graphics.drawable.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Air
 import androidx.compose.material.icons.filled.DeviceThermostat
@@ -10,7 +9,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.akshaym.weatherappcompose.feature.home.domain.model.MetricType
+import com.akshaym.weatherappcompose.domain.model.MetricType
 
 // UI Layer code
 @Composable

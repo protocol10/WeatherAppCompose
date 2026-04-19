@@ -1,7 +1,6 @@
-package com.akshaym.weatherappcompose.feature.home.data
+package com.akshaym.weatherappcompose.data.remote.model
 
 import com.google.gson.annotations.SerializedName
-import java.sql.Date
 
 data class GeoLocationResponse(
     @SerializedName("EnglishName") val englishName: String,

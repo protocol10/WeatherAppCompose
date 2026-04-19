@@ -1,21 +1,18 @@
-package com.akshaym.weatherappcompose.feature.home.data.repository
+package com.akshaym.weatherappcompose.data.repsoitory
 
-import androidx.compose.ui.text.toLowerCase
-import com.akshaym.weatherappcompose.feature.home.data.CurrentLocationWeatherDataItem
-import com.akshaym.weatherappcompose.feature.home.data.ForeCastResponse
-import com.akshaym.weatherappcompose.feature.home.data.GeoLocationResponse
-import com.akshaym.weatherappcompose.feature.home.domain.model.CurrentWeatherLocationData
-import com.akshaym.weatherappcompose.feature.home.domain.model.MetricItem
-import com.akshaym.weatherappcompose.feature.home.domain.model.MetricType
-import com.akshaym.weatherappcompose.feature.home.domain.model.Temperature
-import com.akshaym.weatherappcompose.feature.home.domain.model.WeatherForeCast
-import com.akshaym.weatherappcompose.feature.home.domain.model.WeatherLocation
-import com.akshaym.weatherappcompose.feature.home.domain.repository.WeatherRepository
-import com.akshaym.weatherappcompose.network.WeatherApi
+import com.akshaym.weatherappcompose.data.remote.model.CurrentLocationWeatherDataItem
+import com.akshaym.weatherappcompose.data.remote.model.ForeCastResponse
+import com.akshaym.weatherappcompose.data.remote.model.GeoLocationResponse
+import com.akshaym.weatherappcompose.domain.model.CurrentWeatherLocationData
+import com.akshaym.weatherappcompose.domain.model.MetricItem
+import com.akshaym.weatherappcompose.domain.model.MetricType
+import com.akshaym.weatherappcompose.domain.model.Temperature
+import com.akshaym.weatherappcompose.domain.model.WeatherForeCast
+import com.akshaym.weatherappcompose.domain.model.WeatherLocation
+import com.akshaym.weatherappcompose.domain.repository.WeatherRepository
+import com.akshaym.weatherappcompose.data.remote.api.WeatherApi
 import javax.inject.Inject
-import java.time.Instant
 import java.time.OffsetDateTime
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 class WeatherRepositoryImpl @Inject constructor(val weatherApi: WeatherApi) : WeatherRepository {

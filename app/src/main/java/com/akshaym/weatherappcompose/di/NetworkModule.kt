@@ -1,7 +1,7 @@
 package com.akshaym.weatherappcompose.di
 
 import com.akshaym.weatherappcompose.network.AuthInterceptor
-import com.akshaym.weatherappcompose.network.WeatherApi
+import com.akshaym.weatherappcompose.data.remote.api.WeatherApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

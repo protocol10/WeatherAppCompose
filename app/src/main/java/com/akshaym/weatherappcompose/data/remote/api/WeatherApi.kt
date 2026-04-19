@@ -1,8 +1,8 @@
-package com.akshaym.weatherappcompose.network
+package com.akshaym.weatherappcompose.data.remote.api
 
-import com.akshaym.weatherappcompose.feature.home.data.CurrentLocationWeatherDataItem
-import com.akshaym.weatherappcompose.feature.home.data.ForeCastResponse
-import com.akshaym.weatherappcompose.feature.home.data.GeoLocationResponse
+import com.akshaym.weatherappcompose.data.remote.model.CurrentLocationWeatherDataItem
+import com.akshaym.weatherappcompose.data.remote.model.ForeCastResponse
+import com.akshaym.weatherappcompose.data.remote.model.GeoLocationResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query

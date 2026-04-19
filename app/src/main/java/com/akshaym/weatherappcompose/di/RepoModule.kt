@@ -1,8 +1,7 @@
 package com.akshaym.weatherappcompose.di
 
-import com.akshaym.weatherappcompose.feature.home.data.repository.WeatherRepositoryImpl
-import com.akshaym.weatherappcompose.feature.home.domain.repository.WeatherRepository
-import com.akshaym.weatherappcompose.network.WeatherApi
+import com.akshaym.weatherappcompose.data.repsoitory.WeatherRepositoryImpl
+import com.akshaym.weatherappcompose.domain.repository.WeatherRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

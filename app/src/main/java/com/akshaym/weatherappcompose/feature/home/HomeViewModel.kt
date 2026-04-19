@@ -1,16 +1,13 @@
 package com.akshaym.weatherappcompose.feature.home
 
 import android.location.Location
-import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.akshaym.weatherappcompose.feature.home.domain.model.WeatherLocation
-import com.akshaym.weatherappcompose.feature.home.domain.model.WeatherSection
-import com.akshaym.weatherappcompose.feature.home.domain.repository.WeatherRepository
+import com.akshaym.weatherappcompose.domain.model.WeatherSection
+import com.akshaym.weatherappcompose.domain.repository.WeatherRepository
 import com.akshaym.weatherappcompose.location.LocationFetcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
