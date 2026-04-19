@@ -16,11 +16,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CloudCircle
 import androidx.compose.material.icons.filled.HeatPump
+import androidx.compose.material.icons.filled.Light
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Shower
+import androidx.compose.material.icons.filled.WbCloudy
+import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -158,7 +164,40 @@ fun HomeScreen(navController: NavHostController) {
                                 }
 
                                 is WeatherSection.HourlyForeCast -> {
+                                    Card(
+                                        modifier = Modifier
+                                            .padding(horizontal = 16.dp)
+                                            .fillMaxWidth(),
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = WeatherCardBg
+                                        )
+                                    ) {
+                                        Column(
+                                            modifier = Modifier.padding(16.dp)
+                                        ) {
+                                            Text(
+                                                text = "Hourly Forecast",
+                                                color = Color.White,
+                                                style = MaterialTheme.typography.titleMedium
+                                            )
 
+                                            Spacer(modifier = Modifier.height(16.dp))
+
+                                            LazyRow(
+                                                horizontalArrangement = Arrangement.spacedBy(20.dp)
+                                            ) {
+                                                items(section.weatherForeCast) { forecast ->
+                                                    HourlyForeCast(
+                                                        icon = forecast.weatherIcon,
+                                                        time = forecast.dateTime,
+                                                        temperature = forecast.temperature.value.toString(),
+                                                        unit = forecast.temperature.unit,
+                                                        modifier = Modifier,
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
 
@@ -295,4 +334,39 @@ fun MetricCard(icon: ImageVector, title: String, value: String, unit: String, mo
             )
         }
     }
+}
+
+@Composable
+fun HourlyForeCast(icon: Int, time: String, temperature: String, unit: String, modifier: Modifier) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = time,
+            color = Color.White
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Icon(
+            imageVector = weatherIconRes(icon),
+            contentDescription = null,
+            tint = Color.Yellow,
+            modifier = Modifier.size(32.dp)
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Text(
+            text = temperature,
+            color = Color.White,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+fun weatherIconRes(icon: Int) = when (icon) {
+    1, 2, 3 -> Icons.Filled.WbSunny
+    4, 5, 6 -> Icons.Filled.WbCloudy
+    7, 8 -> Icons.Filled.CloudCircle
+    12, 13, 14 -> Icons.Default.Shower
+    else -> Icons.Default.Light
 }

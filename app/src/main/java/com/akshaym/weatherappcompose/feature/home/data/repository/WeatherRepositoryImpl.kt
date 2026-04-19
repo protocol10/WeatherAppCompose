@@ -1,5 +1,6 @@
 package com.akshaym.weatherappcompose.feature.home.data.repository
 
+import androidx.compose.ui.text.toLowerCase
 import com.akshaym.weatherappcompose.feature.home.data.CurrentLocationWeatherDataItem
 import com.akshaym.weatherappcompose.feature.home.data.ForeCastResponse
 import com.akshaym.weatherappcompose.feature.home.data.GeoLocationResponse
@@ -11,8 +12,11 @@ import com.akshaym.weatherappcompose.feature.home.domain.model.WeatherForeCast
 import com.akshaym.weatherappcompose.feature.home.domain.model.WeatherLocation
 import com.akshaym.weatherappcompose.feature.home.domain.repository.WeatherRepository
 import com.akshaym.weatherappcompose.network.WeatherApi
-import timber.log.Timber
 import javax.inject.Inject
+import java.time.Instant
+import java.time.OffsetDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 class WeatherRepositoryImpl @Inject constructor(val weatherApi: WeatherApi) : WeatherRepository {
     override suspend fun getCurrentWeather(
@@ -39,34 +43,22 @@ private fun List<CurrentLocationWeatherDataItem>.toCurrentWeatherData(): Current
             val metricItem = mutableListOf<MetricItem>()
             metricItem.add(
                 MetricItem(
-                    "Humidity",
-                    relativeHumidity.toString(),
-                    MetricType.HUMIDITY,
-                    "%"
+                    "Humidity", relativeHumidity.toString(), MetricType.HUMIDITY, "%"
                 )
             )
             metricItem.add(
                 MetricItem(
-                    "WindSpeed",
-                    wind.speed.metric.value.toString(),
-                    MetricType.WIND,
-                    "mph"
+                    "WindSpeed", wind.speed.metric.value.toString(), MetricType.WIND, "mph"
                 )
             )
             metricItem.add(
                 MetricItem(
-                    "Visibility",
-                    visibility.metric.value.toString(),
-                    MetricType.VISIBILITY,
-                    "mi"
+                    "Visibility", visibility.metric.value.toString(), MetricType.VISIBILITY, "mi"
                 )
             )
             metricItem.add(
                 MetricItem(
-                    "Pressure",
-                    pressure.metric.value.toString(),
-                    MetricType.PRESSURE,
-                    "in"
+                    "Pressure", pressure.metric.value.toString(), MetricType.PRESSURE, "in"
                 )
             )
             metricItem.add(MetricItem("UVIndex", uvIndex.toString(), MetricType.UV, ""))
@@ -83,8 +75,7 @@ private fun List<CurrentLocationWeatherDataItem>.toCurrentWeatherData(): Current
                     value = this.temperature.metric.value,
                     unit = this.temperature.metric.unit,
                     unitType = this.temperature.metric.unitType
-                ), weatherText = this.weatherText,
-                list = metricItem
+                ), weatherText = this.weatherText, list = metricItem
             )
         }
 
@@ -95,13 +86,19 @@ private fun List<CurrentLocationWeatherDataItem>.toCurrentWeatherData(): Current
 private fun List<ForeCastResponse>.toForeCast(): List<WeatherForeCast> {
     val l = mutableListOf<WeatherForeCast>()
     for (i in this) {
+        val formattedTime =
+            OffsetDateTime.parse(i.dateTime).format(DateTimeFormatter.ofPattern("h a"))
+                .lowercase()
         l.add(
             WeatherForeCast(
                 temperature = Temperature(
                     value = i.temperature.value,
                     unit = i.temperature.unit,
                     unitType = i.temperature.unitType
-                ), dateTime = i.dateTime, epochTime = i.epochDateTime, weatherIcon = i.weatherIcon
+                ),
+                dateTime = formattedTime,
+                epochTime = i.epochDateTime,
+                weatherIcon = i.weatherIcon
             )
         )
     }

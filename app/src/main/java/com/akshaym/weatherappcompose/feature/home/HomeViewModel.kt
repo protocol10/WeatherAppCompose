@@ -53,22 +53,21 @@ class HomeViewModel @Inject constructor(
                 Timber.i("Current location calling api $currentLocation")
 
                 currentLocation?.let {
-
-                    val currentWeather = async {
+                    val currentWeatherData = async {
                         weatherRepository.getCurrentWeather(
-                            currentLocation.latitude, currentLocation.longitude
+                            currentLocation.latitude,
+                            currentLocation.longitude
                         )
-                    }
-                    val currentWeatherData = currentWeather.await()
-                    Timber.i("Current weather ${currentWeatherData.locationKey}")
-                    val weatherForeCast =
-                        async { weatherRepository.getWeatherForecast(currentWeatherData.locationKey) }
-                    val weatherForeCastData = weatherForeCast.await()
+                    }.await()
+                    val weatherForeCastData =
+                        async { weatherRepository.getWeatherForecast(currentWeatherData.locationKey) }.await()
 
                     val currentLocationWeatherData = async {
                         weatherRepository.getCurrentWeatherData(currentWeatherData.locationKey)
                     }.await()
+
                     val uiList = mutableListOf<WeatherSection>()
+
                     uiList.add(
                         WeatherSection.Header(
                             cityName = currentWeatherData.cityName,
@@ -76,13 +75,12 @@ class HomeViewModel @Inject constructor(
                             temperature = currentLocationWeatherData?.temperature
                         )
                     )
+                    uiList.add(WeatherSection.HourlyForeCast(weatherForeCastData))
                     uiList.add(
                         WeatherSection.WeatherMetrics(
                             items = currentLocationWeatherData?.list ?: emptyList()
                         )
                     )
-                    Timber.i("Weather Forecast data $weatherForeCastData")
-                    Timber.i("Current weather data ${currentWeatherData.cityName} ${currentLocationWeatherData?.list}")
                     _list.value = uiList
                 }
 

@@ -13,9 +13,8 @@ interface WeatherApi {
     suspend fun getGeoPosition(@Query("q") query: String): GeoLocationResponse
 
     @GET("forecasts/v1/hourly/12hour/{locationKey}")
-    suspend fun getTwelveHourlyForecast(@Path("locationKey") locationkey: String): List<ForeCastResponse>
+    suspend fun getTwelveHourlyForecast(@Path("locationKey") locationKey: String): List<ForeCastResponse>
 
-    //    https://dataservice.accuweather.com/currentconditions/v1/337169
     @GET("currentconditions/v1/{locationKey}")
     suspend fun getCurrentLocationWeatherData(
         @Path("locationKey") locationkey: String,
