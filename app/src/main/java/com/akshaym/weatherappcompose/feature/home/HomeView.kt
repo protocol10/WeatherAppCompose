@@ -29,8 +29,8 @@ fun CurrentLocationView(cityName: String, countryName: String) {
         )
 
         Column(modifier = Modifier.padding(start = 8.dp)) {
-            Text(text = cityName)
-            Text(text = countryName, modifier = Modifier.padding(top = 8.dp))
+            Text(text = cityName, color = Color.White)
+            Text(text = countryName, modifier = Modifier.padding(top = 8.dp), color = Color.White)
         }
     }
 }

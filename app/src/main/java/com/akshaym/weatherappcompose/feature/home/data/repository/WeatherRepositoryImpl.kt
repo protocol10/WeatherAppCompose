@@ -5,6 +5,7 @@ import com.akshaym.weatherappcompose.feature.home.data.ForeCastResponse
 import com.akshaym.weatherappcompose.feature.home.data.GeoLocationResponse
 import com.akshaym.weatherappcompose.feature.home.domain.model.CurrentWeatherLocationData
 import com.akshaym.weatherappcompose.feature.home.domain.model.MetricItem
+import com.akshaym.weatherappcompose.feature.home.domain.model.MetricType
 import com.akshaym.weatherappcompose.feature.home.domain.model.Temperature
 import com.akshaym.weatherappcompose.feature.home.domain.model.WeatherForeCast
 import com.akshaym.weatherappcompose.feature.home.domain.model.WeatherLocation
@@ -36,16 +37,44 @@ private fun List<CurrentLocationWeatherDataItem>.toCurrentWeatherData(): Current
     if (!this.isEmpty()) {
         with(this[0]) {
             val metricItem = mutableListOf<MetricItem>()
-            metricItem.add(MetricItem("Humidity", relativeHumidity.toString(), 0, "%"))
-            metricItem.add(MetricItem("WindSpeed", wind.speed.metric.value.toString(), 0, "mph"))
-            metricItem.add(MetricItem("Visibility", visibility.metric.value.toString(), 0, "mi"))
-            metricItem.add(MetricItem("Pressure", pressure.metric.value.toString(), 0, "in"))
-            metricItem.add(MetricItem("UVIndex", uvIndex.toString(), 0, ""))
+            metricItem.add(
+                MetricItem(
+                    "Humidity",
+                    relativeHumidity.toString(),
+                    MetricType.HUMIDITY,
+                    "%"
+                )
+            )
+            metricItem.add(
+                MetricItem(
+                    "WindSpeed",
+                    wind.speed.metric.value.toString(),
+                    MetricType.WIND,
+                    "mph"
+                )
+            )
+            metricItem.add(
+                MetricItem(
+                    "Visibility",
+                    visibility.metric.value.toString(),
+                    MetricType.VISIBILITY,
+                    "mi"
+                )
+            )
+            metricItem.add(
+                MetricItem(
+                    "Pressure",
+                    pressure.metric.value.toString(),
+                    MetricType.PRESSURE,
+                    "in"
+                )
+            )
+            metricItem.add(MetricItem("UVIndex", uvIndex.toString(), MetricType.UV, ""))
             metricItem.add(
                 MetricItem(
                     "Feels Like",
                     realFeelTemperature.metric.value.toString(),
-                    0,
+                    MetricType.FEELS_LIKE,
                     ""
                 )
             )

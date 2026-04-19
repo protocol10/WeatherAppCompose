@@ -17,14 +17,8 @@ val WeatherGradientBottom = Color(0xFF4B33E7) // Deep Indigo
 // We use 0x26 which is roughly 15% opacity white
 val WeatherCardBg = Color(0x26FFFFFF)
 
-// Borders (Optional but helps the 'glass' look)
-val WeatherCardStroke = Color(0x33FFFFFF) // 20% white
-
-val WeatherGradientStart = Color(0xFF4A90E2)
-val WeatherGradientEnd = Color(0xFF4332E6)
-
-// Card Colors (Glassmorphism)
-// The first two characters '1A' represent ~10% opacity in Hex
-val WeatherCardBackground = Color(0x1AFFFFFF)
-val WeatherCardContent = Color(0xFFFFFFFF)
-val WeatherCardContentSecondary = Color(0xCCFFFFFF) //
+// Color.kt
+val BottomNavBackground = Color(0x33FFFFFF) // 20% White
+val BottomNavActiveIndicator = Color(0x4DFFFFFF) // 30% White
+val BottomNavContentSelected = Color(0xFFFFFFFF)
+val BottomNavContentUnselected = Color(0xB3FFFFFF)

@@ -1,7 +1,6 @@
 package com.akshaym.weatherappcompose.feature.home
 
 import android.Manifest
-import android.annotation.SuppressLint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -16,15 +15,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.HeatPump
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -37,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -46,11 +45,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.akshaym.weatherappcompose.R
 import com.akshaym.weatherappcompose.feature.home.domain.model.WeatherSection
 import com.akshaym.weatherappcompose.ui.permissions.PermissionHandler
-import androidx.core.graphics.toColorInt
+import com.akshaym.weatherappcompose.ui.extensions.getIcon
 import com.akshaym.weatherappcompose.ui.theme.WeatherCardBg
 import com.akshaym.weatherappcompose.ui.theme.WeatherGradientBottom
 import com.akshaym.weatherappcompose.ui.theme.WeatherGradientTop
@@ -93,11 +91,15 @@ fun HomeScreen(navController: NavHostController) {
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             CircularProgressIndicator()
-                            Text("Loading....", modifier = Modifier.padding(top = 16.dp))
+                            Text(
+                                "Loading....",
+                                modifier = Modifier.padding(top = 16.dp),
+                                color = Color.White
+                            )
                         }
                     }
                 } else if (isError != null) {
-                    Text(text = isError ?: "Unknown error", color = Color.Red)
+                    Text(text = isError ?: "Unknown error", color = Color.White)
                 } else {
                     LazyColumn(
                         modifier = Modifier.weight(1f),
@@ -123,7 +125,8 @@ fun HomeScreen(navController: NavHostController) {
                                                 text = "${it.value} ${it.unit}",
                                                 modifier = Modifier
                                                     .padding(16.dp)
-                                                    .align(Alignment.CenterHorizontally)
+                                                    .align(Alignment.CenterHorizontally),
+                                                color = Color.White
                                             )
                                         }
                                     }
@@ -139,7 +142,7 @@ fun HomeScreen(navController: NavHostController) {
                                             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                                 rowItems.forEach { item ->
                                                     MetricCard(
-                                                        icon = item.icon,
+                                                        icon = item.metricType.getIcon(),
                                                         title = item.title,
                                                         value = item.value,
                                                         unit = item.unit,
@@ -165,7 +168,6 @@ fun HomeScreen(navController: NavHostController) {
 
             }
         } else {
-            // THE "PRE-REQUEST" UI (The one with the big button)
             PermissionRequestUI(onRequestClick = requestPermission)
         }
     }
@@ -191,16 +193,16 @@ fun PreviewHeader() {
             text = "{it.value} {it.unit}",
             modifier = Modifier
                 .padding(16.dp)
-                .align(Alignment.CenterHorizontally)
+                .align(Alignment.CenterHorizontally),
+            color = Color.White
         )
-//        }
     }
 }
 
 @Preview
 @Composable
 fun PreviewHomeScreen() {
-    MetricCard(0, "akshay", "value", "val", modifier = Modifier.width(100.dp))
+    MetricCard(Icons.Filled.HeatPump, "akshay", "value", "val", modifier = Modifier.width(100.dp))
 }
 
 @Composable
@@ -227,7 +229,8 @@ fun PermissionRequestUI(
             text = "Enable Location",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            color = Color.White
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -236,8 +239,8 @@ fun PermissionRequestUI(
             text = "To show you the most accurate weather for your current city, we need to know where you are.",
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            lineHeight = 24.sp
+            lineHeight = 24.sp,
+            color = Color.White
         )
 
         Spacer(modifier = Modifier.height(48.dp))
@@ -250,7 +253,9 @@ fun PermissionRequestUI(
             shape = RoundedCornerShape(12.dp)
         ) {
             Text(
-                text = "Allow Access", style = MaterialTheme.typography.titleMedium
+                text = "Allow Access",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.White
             )
         }
 
@@ -260,13 +265,13 @@ fun PermissionRequestUI(
             text = "We only use your location to fetch local weather data. Your privacy is protected.",
             style = MaterialTheme.typography.labelSmall,
             textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.outline
+            color = Color.White
         )
     }
 }
 
 @Composable
-fun MetricCard(icon: Int, title: String, value: String, unit: String, modifier: Modifier) {
+fun MetricCard(icon: ImageVector, title: String, value: String, unit: String, modifier: Modifier) {
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
@@ -277,9 +282,9 @@ fun MetricCard(icon: Int, title: String, value: String, unit: String, modifier: 
             Row(modifier = Modifier.padding(start = 8.dp, top = 12.dp)) {
                 Icon(
                     modifier = Modifier.padding(end = 8.dp),
-                    imageVector = Icons.Filled.LocationOn,
+                    imageVector = icon,
                     contentDescription = "",
-                    tint = Color.Red
+                    tint = Color.White
                 )
                 Text(text = title, color = Color.White)
             }
