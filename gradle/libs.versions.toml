@@ -1,6 +1,7 @@
 [versions]
 agp = "8.12.3"
 converterGson = "3.0.0"
+datastorePreferences = "1.2.1"
 desugar_jdk_libs = "2.1.5"
 gson = "2.13.2"
 hiltAndroidVersion = "2.52"
@@ -27,6 +28,7 @@ ksp = "2.1.0-1.0.29" # Must match Kotlin version exactly
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }

@@ -115,7 +115,16 @@ fun WeatherBottomBar(navController: NavController) {
                     NavigationBarItem(
                         selected = currentRoute == item.title,
                         onClick = {
-                            navController.navigate(item.title)
+                            val destination = item.title
+                            if (currentRoute != destination) {
+                                navController.navigate(destination) {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            }
                         },
                         icon = {
                             Icon(
@@ -143,8 +152,6 @@ fun WeatherBottomBar(navController: NavController) {
                 }
             }
         }
-
-
     }
 }
 
