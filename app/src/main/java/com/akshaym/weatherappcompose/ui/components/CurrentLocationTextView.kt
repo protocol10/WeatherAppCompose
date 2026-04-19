@@ -1,4 +1,4 @@
-package com.akshaym.weatherappcompose.feature.home
+package com.akshaym.weatherappcompose.ui.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

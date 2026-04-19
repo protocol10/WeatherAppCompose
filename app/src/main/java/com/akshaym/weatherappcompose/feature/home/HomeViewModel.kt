@@ -3,6 +3,8 @@ package com.akshaym.weatherappcompose.feature.home
 import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.akshaym.weatherappcompose.data.datastore.SaveCurrentLocationStore
+import com.akshaym.weatherappcompose.domain.model.SaveLocationModel
 import com.akshaym.weatherappcompose.domain.model.WeatherSection
 import com.akshaym.weatherappcompose.domain.repository.WeatherRepository
 import com.akshaym.weatherappcompose.location.LocationFetcher
@@ -18,7 +20,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    val fetcher: LocationFetcher, val weatherRepository: WeatherRepository
+    val fetcher: LocationFetcher,
+    val weatherRepository: WeatherRepository,
+    val saveCurrentLocationStore: SaveCurrentLocationStore
 ) : ViewModel() {
 
     private val _currentLocation = MutableStateFlow<Location?>(null)
@@ -52,8 +56,7 @@ class HomeViewModel @Inject constructor(
                 currentLocation?.let {
                     val currentWeatherData = async {
                         weatherRepository.getCurrentWeather(
-                            currentLocation.latitude,
-                            currentLocation.longitude
+                            currentLocation.latitude, currentLocation.longitude
                         )
                     }.await()
                     val weatherForeCastData =
@@ -76,6 +79,17 @@ class HomeViewModel @Inject constructor(
                     uiList.add(
                         WeatherSection.WeatherMetrics(
                             items = currentLocationWeatherData?.list ?: emptyList()
+                        )
+                    )
+                    saveCurrentLocationStore.saveLocation(
+                        SaveLocationModel(
+                            locationKey = currentWeatherData.locationKey,
+                            cityName = currentWeatherData.cityName,
+                            countryName = currentWeatherData.countryName,
+                            weatherFeel = "Sunny",
+                            lastUpdatedTime = System.currentTimeMillis().toString(),
+                            iconType = "3",
+                            temperature = "$${currentLocationWeatherData!!.temperature.value} ${currentLocationWeatherData.temperature.unit}"
                         )
                     )
                     _list.value = uiList

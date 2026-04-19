@@ -2,6 +2,7 @@ package com.akshaym.weatherappcompose.di
 
 import com.akshaym.weatherappcompose.network.AuthInterceptor
 import com.akshaym.weatherappcompose.data.remote.api.WeatherApi
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,6 +20,12 @@ const val WEATHER_BASE_URL = "https://dataservice.accuweather.com/"
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+
+    @Provides
+    @Singleton
+    fun providesGson(): Gson {
+        return Gson()
+    }
 
     @Provides
     @Singleton

@@ -74,6 +74,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.play.services)
     implementation libs.kotlinx.coroutines.android
     implementation(libs.okhttp3.logging.interceptor)
+    implementation(libs.androidx.datastore.preferences)
+    implementation libs.gson
 
 
     implementation libs.retrofit2

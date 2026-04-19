@@ -20,13 +20,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CloudCircle
-import androidx.compose.material.icons.filled.HeatPump
-import androidx.compose.material.icons.filled.Light
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Shower
-import androidx.compose.material.icons.filled.WbCloudy
-import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -41,11 +35,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -53,6 +45,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.akshaym.weatherappcompose.R
 import com.akshaym.weatherappcompose.domain.model.WeatherSection
+import com.akshaym.weatherappcompose.ui.components.CurrentLocationView
+import com.akshaym.weatherappcompose.ui.components.HourlyForeCastItemView
+import com.akshaym.weatherappcompose.ui.components.MetricCard
 import com.akshaym.weatherappcompose.ui.permissions.PermissionHandler
 import com.akshaym.weatherappcompose.ui.extensions.getIcon
 import com.akshaym.weatherappcompose.ui.theme.WeatherCardBg
@@ -187,7 +182,7 @@ fun HomeScreen(navController: NavHostController) {
                                                 horizontalArrangement = Arrangement.spacedBy(20.dp)
                                             ) {
                                                 items(section.weatherForeCast) { forecast ->
-                                                    HourlyForeCast(
+                                                    HourlyForeCastItemView(
                                                         icon = forecast.weatherIcon,
                                                         time = forecast.dateTime,
                                                         temperature = forecast.temperature.value.toString(),
@@ -200,7 +195,6 @@ fun HomeScreen(navController: NavHostController) {
                                     }
                                 }
                             }
-
                         }
                     }
                 }
@@ -211,37 +205,6 @@ fun HomeScreen(navController: NavHostController) {
         }
     }
 
-}
-
-@Preview
-@Composable
-fun PreviewHeader() {
-    Column() {
-        CurrentLocationView("section.cityName", "section.countryName")
-        Image(
-            modifier = Modifier
-                .padding(top = 24.dp, start = 16.dp)
-                .width(120.dp)
-                .height(120.dp),
-            painter = painterResource(R.drawable.ic_rainy),
-            contentDescription = "",
-            colorFilter = ColorFilter.tint(Color.Yellow)
-        )
-
-        Text(
-            text = "{it.value} {it.unit}",
-            modifier = Modifier
-                .padding(16.dp)
-                .align(Alignment.CenterHorizontally),
-            color = Color.White
-        )
-    }
-}
-
-@Preview
-@Composable
-fun PreviewHomeScreen() {
-    MetricCard(Icons.Filled.HeatPump, "akshay", "value", "val", modifier = Modifier.width(100.dp))
 }
 
 @Composable
@@ -307,66 +270,4 @@ fun PermissionRequestUI(
             color = Color.White
         )
     }
-}
-
-@Composable
-fun MetricCard(icon: ImageVector, title: String, value: String, unit: String, modifier: Modifier) {
-    Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(
-            containerColor = WeatherCardBg
-        ),
-    ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Row(modifier = Modifier.padding(start = 8.dp, top = 12.dp)) {
-                Icon(
-                    modifier = Modifier.padding(end = 8.dp),
-                    imageVector = icon,
-                    contentDescription = "",
-                    tint = Color.White
-                )
-                Text(text = title, color = Color.White)
-            }
-            Text(
-                modifier = Modifier.padding(start = 12.dp, top = 16.dp, bottom = 12.dp),
-                text = "$value $unit",
-                color = Color.White,
-            )
-        }
-    }
-}
-
-@Composable
-fun HourlyForeCast(icon: Int, time: String, temperature: String, unit: String, modifier: Modifier) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text = time,
-            color = Color.White
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Icon(
-            imageVector = weatherIconRes(icon),
-            contentDescription = null,
-            tint = Color.Yellow,
-            modifier = Modifier.size(32.dp)
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Text(
-            text = temperature,
-            color = Color.White,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
-
-fun weatherIconRes(icon: Int) = when (icon) {
-    1, 2, 3 -> Icons.Filled.WbSunny
-    4, 5, 6 -> Icons.Filled.WbCloudy
-    7, 8 -> Icons.Filled.CloudCircle
-    12, 13, 14 -> Icons.Default.Shower
-    else -> Icons.Default.Light
 }
