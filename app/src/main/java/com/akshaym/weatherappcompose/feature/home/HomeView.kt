@@ -15,7 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun CurrentLocationView() {
+fun CurrentLocationView(cityName: String, countryName: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -29,8 +29,8 @@ fun CurrentLocationView() {
         )
 
         Column(modifier = Modifier.padding(start = 8.dp)) {
-            Text(text = "San Franscio")
-            Text(text = "United States", modifier = Modifier.padding(top = 8.dp))
+            Text(text = cityName, color = Color.White)
+            Text(text = countryName, modifier = Modifier.padding(top = 8.dp), color = Color.White)
         }
     }
 }
@@ -38,5 +38,5 @@ fun CurrentLocationView() {
 @Preview(showBackground = true)
 @Composable
 fun PreviewComoseView() {
-    CurrentLocationView()
+    CurrentLocationView("San Jose", "US")
 }
